@@ -1,0 +1,79 @@
+name: sign-monitoring
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    volumes:
+      - ./backend:/backend
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - db_gibdd
+      - db_commerce
+    command: python manage.py runserver 0.0.0.0:${BACKEND_PORT}
+
+
+  db:
+    image: postgres:14
+    container_name: unified_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_UNIFIED_NAME}
+      POSTGRES_USER: ${DB_UNIFIED_USER}
+      POSTGRES_PASSWORD: ${DB_UNIFIED_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  db_gibdd:
+    build:
+      context: .
+      dockerfile: gibdd_db/Dockerfile
+    container_name: gibdd_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_GIBDD_NAME}
+      POSTGRES_USER: ${DB_GIBDD_USER}
+      POSTGRES_PASSWORD: ${DB_GIBDD_PASSWORD}
+    volumes:
+      - pg_data_gibdd:/var/lib/postgresql/data
+      - ./gibdd_db_init:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+
+  db_commerce:
+    build:
+      context: .
+      dockerfile: commerce_db/Dockerfile
+    container_name: commerce_db
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: ${DB_COMMERCE_PASSWORD}
+      MSSQL_PID: Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+      - ./commerce_db_init:/docker-entrypoint-initdb.d
+    command:
+      - /bin/bash
+      - -c
+      - |
+        /opt/mssql/bin/sqlservr &
+        until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${DB_COMMERCE_PASSWORD}" -Q "SELECT 1" &>/dev/null; do
+          echo "Waiting for SQL Server to be ready..."
+          sleep 5
+        done
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${DB_COMMERCE_PASSWORD}" -i /docker-entrypoint-initdb.d/init.sql
+        wait
+
+
+volumes:
+  pg_data:
+  pg_data_gibdd:
+  mssql_data:

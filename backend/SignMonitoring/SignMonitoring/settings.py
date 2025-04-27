@@ -64,7 +64,7 @@ DATABASES = {
         'HOST': env('DB_UNIFIED_HOST'),
         'PORT': env('DB_UNIFIED_PORT'),
     },
-    'gibdd': {
+    'gibdd_db': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env('DB_GIBDD_NAME'),
         'USER': env('DB_GIBDD_USER'),
@@ -72,11 +72,11 @@ DATABASES = {
         'HOST': env('DB_GIBDD_HOST'),
         'PORT': env('DB_GIBDD_PORT'),
         'OPTIONS': {
-            'readonly': True,
+            'options': '-c default_transaction_read_only=on',
         },
     },
-    'commerce': {
-        'ENGINE': 'sql_server.pyodbc',
+    'commerce_db': {
+        'ENGINE': 'mssql',
         'NAME': env('DB_COMMERCE_NAME'),
         'USER': env('DB_COMMERCE_USER'),
         'PASSWORD': env('DB_COMMERCE_PASSWORD'),
@@ -84,10 +84,12 @@ DATABASES = {
         'PORT': env('DB_COMMERCE_PORT'),
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
-            'readonly': True,
+            'options': '-c default_transaction_read_only=on',
         },
     },
 }
+
+DATABASE_CONNECTION_POOLING = False
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -117,3 +119,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 GIBDD_SIGN_TABLE = env('DB_GIBDD_SIGN_TABLE')
+COMMERCE_SIGN_TABLE = env('DB_COMMERCE_SIGN_TABLE')

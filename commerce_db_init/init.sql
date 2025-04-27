@@ -34,7 +34,9 @@ INSERT INTO sample_table (name, geo, description, internal_id)
 SELECT name, geo, description, internal_id
 FROM (VALUES
             ('A, Location', '-37.458924,122.134789', NULL, 'IIDBB0010011'),
+            ('A, Location', '-37.458924,122.13479', NULL, 'IIDBB0010012'),
             ('B, Location', '40.712836,-74.006015', NULL, 'IIDBB001002'),
+            ('B, Location', '40.712837,-74.006015', NULL, 'IIDBB0010032'),
             ('C, Location', '51.508323,-0.1259987', NULL, 'IIDBB001003'),
             ('A, Location', '-33.868821,151.209295', NULL, 'IIDBB001004'),
             ('C, Location', '48.856789,2.2943432', NULL, 'IIDBB001005'),

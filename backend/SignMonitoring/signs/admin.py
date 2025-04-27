@@ -1,3 +1,17 @@
 from django.contrib import admin
 
-# Register your models here.
+from signs.models import UnitedSign
+
+
+@admin.register(UnitedSign)
+class UnitedSignAdmin(admin.ModelAdmin):
+    list_display = (
+        'gibdd_unical_id',
+        'commerce_internal_id',
+        'name',
+        'latitude',
+        'longitude',
+        'gibdd_description',
+        'commerce_description',
+    )
+    list_per_page = 20

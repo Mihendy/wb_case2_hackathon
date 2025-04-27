@@ -10,8 +10,12 @@ django-widget-tweaks = "~=1.5"
 isort = "~=5.10"
 flake8 = "~=4.0"
 psycopg2-binary = "~=2.9"
-django-mssql-backend = "~=2.8"
+mssql-django = "~=1.5"
+pyodbc = "~=5.2"
 djangorestframework = "~=3.13"
+pandas = "~=2.2"
+geopy = "~=2.4"
+sqlalchemy = "~=2.0"
 
 [dev-packages]
 

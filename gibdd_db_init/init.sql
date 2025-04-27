@@ -14,9 +14,9 @@ $$;
 DO
 $$
     BEGIN
-        IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'sample_database') THEN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'sample_table') THEN
             -- Создание таблицы, если она не существует
-            CREATE TABLE sample_database
+            CREATE TABLE sample_table
             (
                 id          SERIAL PRIMARY KEY,           -- Автоинкрементируемый первичный ключ
                 unical_id   INT          NOT NULL UNIQUE, -- Уникальный идентификатор
@@ -30,7 +30,7 @@ $$
 $$;
 
 -- Вставка 10 записей
-INSERT INTO sample_database (unical_id, name, latitude, longitude, description)
+INSERT INTO sample_table (unical_id, name, latitude, longitude, description)
 VALUES (1001, 'Location A', 37458923, -122134789, 'A beautiful park in the city center.'),
        (1002, 'Location B', 40712836, -74006015, 'Historic landmark with great views.'),
        (1003, 'Location C', 51508423, -1259987, 'Iconic museum known for its art collection.'),

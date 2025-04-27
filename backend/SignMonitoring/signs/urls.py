@@ -1,5 +1,5 @@
 from django.urls import path
-from signs.views import UnitedSignListView, ForceLoadSignsView
+from signs.views import ForceLoadSignsView, UnitedSignListView
 
 urlpatterns = [
     path('signs/', UnitedSignListView.as_view(), name='signs_list'),

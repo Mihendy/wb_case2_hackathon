@@ -1,13 +1,11 @@
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 
 import pandas as pd
+from django.conf import settings
 from django.db.models.query import QuerySet
 from geopy.distance import geodesic
-
-from django.conf import settings
+from signs.models import CommerceSign, GibddSign, UnitedSign
 from sqlalchemy import create_engine
-
-from signs.models import GibddSign, CommerceSign, UnitedSign
 
 
 def is_valid_geo(geo_str):
@@ -73,13 +71,11 @@ def format_commerce_signs(commerce_qs: QuerySet):
 
     # валидация координат
     commerce_df = commerce_df[
-        (commerce_df['latitude'] >= Decimal('-90')) & (commerce_df['latitude'] <= Decimal('90')) &
-        (commerce_df['longitude'] >= Decimal('-180')) & (commerce_df['longitude'] <= Decimal('180'))
-        ]
+        (commerce_df['latitude'] >= Decimal('-90')) & (commerce_df['latitude'] <= Decimal('90'))
+        & (commerce_df['longitude'] >= Decimal('-180')) & (commerce_df['longitude'] <= Decimal('180'))]
 
     # удаление дубликатов
     commerce_df = remove_duplicates(commerce_df, 'name', 'latitude', 'longitude')
-
 
     return commerce_df
 
@@ -99,9 +95,8 @@ def format_gibdd_signs(gibdd_qs: QuerySet):
 
     # валидация координат
     gibdd_df = gibdd_df[
-        (gibdd_df['latitude'] >= Decimal('-90')) & (gibdd_df['latitude'] <= Decimal('90')) &
-        (gibdd_df['longitude'] >= Decimal('-180')) & (gibdd_df['longitude'] <= Decimal('180'))
-        ]
+        (gibdd_df['latitude'] >= Decimal('-90')) & (gibdd_df['latitude'] <= Decimal('90'))
+        & (gibdd_df['longitude'] >= Decimal('-180')) & (gibdd_df['longitude'] <= Decimal('180'))]
 
     # удаление дубликатов
     gibdd_df = remove_duplicates(gibdd_df, 'name', 'latitude', 'longitude')
@@ -186,7 +181,6 @@ def format_signs(commerce_qs: QuerySet, gibdd_qs: QuerySet):
     commerce_df = format_commerce_signs(commerce_qs)
     gibdd_df = format_gibdd_signs(gibdd_qs)
 
-
     # объединение данных
     merged_df = merge_by_name_and_coords_with_flags(commerce_df, gibdd_df)
 
@@ -214,11 +208,14 @@ def force_update_signs() -> tuple[bool, bool]:
 
     format_united_signs = format_signs(CommerceSign.objects.using('commerce_db').all(),
                                        GibddSign.objects.using('gibdd_db').all())
+    print(format_united_signs.head())
 
     # Получаем все знаки из базы данных
     united_signs_qs = UnitedSign.objects.all()
-    old_united_signs = pd.DataFrame.from_records(united_signs_qs.values('gibdd_unical_id', 'commerce_internal_id', 'name', 'latitude', 'longitude', 'gibdd_description', 'commerce_description', 'source', 'status'))
+    old_united_signs = pd.DataFrame.from_records(
+        united_signs_qs.values('gibdd_unical_id', 'commerce_internal_id', 'name', 'latitude', 'longitude',
+                               'gibdd_description', 'commerce_description', 'source', 'status'))
 
-    # print(format_united_signs.head())
+    print(old_united_signs.head())
 
     return created, updated

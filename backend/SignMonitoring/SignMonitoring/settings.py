@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'signs'
 ]
 
 MIDDLEWARE = [
@@ -53,7 +55,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'SignMonitoring.wsgi.application'
 
-ATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env('DB_UNIFIED_NAME'),
@@ -69,6 +71,9 @@ ATABASES = {
         'PASSWORD': env('DB_GIBDD_PASSWORD'),
         'HOST': env('DB_GIBDD_HOST'),
         'PORT': env('DB_GIBDD_PORT'),
+        'OPTIONS': {
+            'readonly': True,
+        },
     },
     'commerce': {
         'ENGINE': 'sql_server.pyodbc',
@@ -79,10 +84,10 @@ ATABASES = {
         'PORT': env('DB_COMMERCE_PORT'),
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
+            'readonly': True,
         },
     },
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -107,9 +112,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-
 STATIC_URL = 'static/'
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+GIBDD_SIGN_TABLE = env('DB_GIBDD_SIGN_TABLE')

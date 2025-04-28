@@ -1,17 +1,18 @@
-FROM node:18-alpine
+FROM node:18 AS build
 
 WORKDIR /app
 
-COPY road-signs-project/package.json ./
-COPY road-signs-project/pnpm-lock.yaml ./
+COPY package*.json ./
+RUN npm install
 
-RUN npm install -g pnpm
-RUN pnpm install
+COPY . .
 
-COPY road-signs-project/ ./
+RUN npm run build
 
-RUN pnpm build
+FROM nginx:alpine
 
-EXPOSE 3000
+COPY --from=build /app/build /usr/share/nginx/html
 
-CMD ["pnpm", "start"]
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

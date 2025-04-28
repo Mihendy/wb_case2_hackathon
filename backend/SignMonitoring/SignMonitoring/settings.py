@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'signs'
 ]
@@ -33,6 +34,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'SignMonitoring.urls'
@@ -120,3 +122,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 GIBDD_SIGN_TABLE = env('DB_GIBDD_SIGN_TABLE')
 COMMERCE_SIGN_TABLE = env('DB_COMMERCE_SIGN_TABLE')
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:80",
+    "http://localhost:8000",
+    "http://localhost",
+
+]

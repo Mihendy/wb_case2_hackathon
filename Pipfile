@@ -4,9 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "~=4.0"
+django = "~=4.2"
 django-environ = "~=0.8"
 django-widget-tweaks = "~=1.5"
+django-cors-headers = "~=4.7"
 isort = "~=5.10"
 flake8 = "~=4.0"
 psycopg2-binary = "~=2.9"
@@ -15,7 +16,7 @@ pyodbc = "~=5.2"
 djangorestframework = "~=3.13"
 pandas = "~=2.2"
 geopy = "~=2.4"
-sqlalchemy = "~=2.0"
+reverse_geocoder = "~=1.5"
 
 [dev-packages]
 

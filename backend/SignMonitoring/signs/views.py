@@ -13,7 +13,7 @@ class UnitedSignListView(ListAPIView):
 
 
 class ForceLoadSignsView(APIView):
-    def get(self, request):
+    def post(self, request):
         created, updated = force_update_signs()  # возвращаем кортеж
         if created:
             return Response({'detail': 'Созданы новые знаки'}, status=status.HTTP_201_CREATED)

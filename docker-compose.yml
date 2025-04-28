@@ -74,6 +74,17 @@ services:
         /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${DB_COMMERCE_PASSWORD}" -i /docker-entrypoint-initdb.d/init.sql
         wait
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+
 
 volumes:
   pg_data:

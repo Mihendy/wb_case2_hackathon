@@ -1,13 +1,11 @@
 from decimal import ROUND_HALF_UP, Decimal
 
 import pandas as pd
-from django.conf import settings
-from django.db import transaction
 from django.db.models.query import QuerySet
 from geopy.distance import geodesic
-from signs.models import CommerceSign, GibddSign, UnitedSign
-from sqlalchemy import create_engine
+import reverse_geocoder as rg
 
+from signs.models import CommerceSign, GibddSign, UnitedSign
 
 def is_valid_geo(geo_str):
     try:
@@ -124,9 +122,8 @@ def merge_by_name_and_coords_with_flags(commerce_df, gibdd_df, max_distance_mete
         matched = False
         if row1['name'] in gibdd_dict:
             for row2 in gibdd_dict[row1['name']]:
-                # Рассчитываем расстояние между точками
                 dist = geodesic((row1['latitude'], row1['longitude']), (row2['latitude'], row2['longitude'])).meters
-                if dist < max_distance_meters:  # Если точка достаточно близка
+                if dist < max_distance_meters:
                     merged_data.append({
                         'internal_id': row1['internal_id'],
                         'unical_id': row2['unical_id'],
@@ -196,18 +193,20 @@ def format_signs(commerce_qs: QuerySet, gibdd_qs: QuerySet):
     # объединение данных
     merged_df = merge_by_name_and_coords_with_flags(commerce_df, gibdd_df)
 
-    # DATABASES = settings.DATABASES['default']
-    # connection_string = f"postgresql://{DATABASES['USER']}:{DATABASES['PASSWORD']}@{DATABASES['HOST']}:{DATABASES['PORT']}/{DATABASES['NAME']}"
-    # table_name = UnitedSign._meta.db_table
-    # engine = create_engine(connection_string)
     merged_df.rename(columns={'internal_id': 'commerce_internal_id'}, inplace=True)
     merged_df.rename(columns={'unical_id': 'gibdd_unical_id'}, inplace=True)
     merged_df['gibdd_unical_id'] = merged_df['gibdd_unical_id'].apply(lambda x: int(x) if not pd.isna(x) else None)
     merged_df['source'] = merged_df.apply(define_source, axis=1)
-    #
-    # merged_df.to_sql(table_name, engine, if_exists='append', index=False)
 
     return merged_df
+
+
+def is_in_russia(latitude: float, longitude: float) -> bool:
+    result = rg.search((latitude, longitude))
+
+    if result and 'RU' in result[0]['cc']:
+        return True
+    return False
 
 
 def force_update_signs() -> tuple[bool, bool]:
@@ -225,7 +224,6 @@ def force_update_signs() -> tuple[bool, bool]:
     format_united_signs['gibdd_unical_id'] = format_united_signs['gibdd_unical_id'].astype(str)
     format_united_signs['gibdd_unical_id'] = format_united_signs['gibdd_unical_id'].replace('nan', None)
 
-
     united_signs_qs = UnitedSign.objects.exclude(status='removed')
     existing_signs = set(zip(format_united_signs['gibdd_unical_id'], format_united_signs['commerce_internal_id']))
 
@@ -233,6 +231,7 @@ def force_update_signs() -> tuple[bool, bool]:
         if (sign.gibdd_unical_id, sign.commerce_internal_id) not in existing_signs:
             sign.status = 'removed'
             sign.save()
+            updated = True
 
     for index, row in format_united_signs.iterrows():
         sign = UnitedSign.objects.filter(
@@ -242,14 +241,18 @@ def force_update_signs() -> tuple[bool, bool]:
 
         if not sign:
             if row['gibdd_unical_id']:
-                sign = UnitedSign.objects.filter(gibdd_unical_id=row['gibdd_unical_id']).exclude(status='removed').first()
+                sign = UnitedSign.objects.filter(gibdd_unical_id=row['gibdd_unical_id']).exclude(
+                    status='removed').first()
                 if row['commerce_internal_id']:
-                    to_remove_sign = UnitedSign.objects.filter(commerce_internal_id=row['commerce_internal_id']).exclude(status='removed').first()
+                    to_remove_sign = UnitedSign.objects.filter(
+                        commerce_internal_id=row['commerce_internal_id']).exclude(status='removed').first()
                     if to_remove_sign:
                         to_remove_sign.status = 'removed'
                         to_remove_sign.save()
+                        updated = True
             if not sign and row['commerce_internal_id']:
-                sign = UnitedSign.objects.filter(commerce_internal_id=row['commerce_internal_id']).exclude(status='removed').first()
+                sign = UnitedSign.objects.filter(commerce_internal_id=row['commerce_internal_id']).exclude(
+                    status='removed').first()
         if not sign:
             sign = UnitedSign.objects.create(
                 gibdd_unical_id=row['gibdd_unical_id'],
@@ -284,6 +287,10 @@ def force_update_signs() -> tuple[bool, bool]:
                 sign.status = 'updated'
             else:
                 sign.status = None
+
+        if not is_in_russia(row['latitude'], row['longitude']):
+            sign.status = 'conflict'
+
         sign.save()
 
     return created, updated

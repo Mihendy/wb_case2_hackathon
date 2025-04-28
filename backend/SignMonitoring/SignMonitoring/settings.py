@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'signs'
 ]
@@ -28,6 +29,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -120,3 +122,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 GIBDD_SIGN_TABLE = env('DB_GIBDD_SIGN_TABLE')
 COMMERCE_SIGN_TABLE = env('DB_COMMERCE_SIGN_TABLE')
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:80",
+    "http://localhost:8000",
+    "http://localhost",
+
+]

@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from signs.models import CommerceSign, GibddSign, UnitedSign
+from signs.models import UnitedSign
 from signs.serializers import UnitedSignSerializer
 from signs.utils import force_update_signs
 
@@ -13,7 +13,7 @@ class UnitedSignListView(ListAPIView):
 
 
 class ForceLoadSignsView(APIView):
-    def get(self, request):
+    def post(self, request):
         created, updated = force_update_signs()  # возвращаем кортеж
         if created:
             return Response({'detail': 'Созданы новые знаки'}, status=status.HTTP_201_CREATED)

@@ -2,6 +2,7 @@ from decimal import ROUND_HALF_UP, Decimal
 
 import pandas as pd
 from django.conf import settings
+from django.db import transaction
 from django.db.models.query import QuerySet
 from geopy.distance import geodesic
 from signs.models import CommerceSign, GibddSign, UnitedSign
@@ -166,6 +167,20 @@ def merge_by_name_and_coords_with_flags(commerce_df, gibdd_df, max_distance_mete
     return pd.DataFrame(merged_data)
 
 
+def define_source(row):
+    commerce_id = row['commerce_internal_id']
+    gibdd_id = row['gibdd_unical_id']
+
+    if pd.notna(commerce_id) and pd.isna(gibdd_id):
+        return 'commerce'
+    elif pd.isna(commerce_id) and pd.notna(gibdd_id):
+        return 'gibdd'
+    elif pd.notna(commerce_id) and pd.notna(gibdd_id):
+        return 'both'
+    else:
+        return 'unknown'
+
+
 def format_signs(commerce_qs: QuerySet, gibdd_qs: QuerySet):
     """
     Функция для форматирования данных о знаках.
@@ -175,23 +190,22 @@ def format_signs(commerce_qs: QuerySet, gibdd_qs: QuerySet):
     """
 
     # знаки коммерции
-
-    pd.set_option('display.max_columns', None)
-
     commerce_df = format_commerce_signs(commerce_qs)
     gibdd_df = format_gibdd_signs(gibdd_qs)
 
     # объединение данных
     merged_df = merge_by_name_and_coords_with_flags(commerce_df, gibdd_df)
 
-    DATABASES = settings.DATABASES['default']
-    connection_string = f"postgresql://{DATABASES['USER']}:{DATABASES['PASSWORD']}@{DATABASES['HOST']}:{DATABASES['PORT']}/{DATABASES['NAME']}"
-    table_name = UnitedSign._meta.db_table
-    engine = create_engine(connection_string)
+    # DATABASES = settings.DATABASES['default']
+    # connection_string = f"postgresql://{DATABASES['USER']}:{DATABASES['PASSWORD']}@{DATABASES['HOST']}:{DATABASES['PORT']}/{DATABASES['NAME']}"
+    # table_name = UnitedSign._meta.db_table
+    # engine = create_engine(connection_string)
     merged_df.rename(columns={'internal_id': 'commerce_internal_id'}, inplace=True)
     merged_df.rename(columns={'unical_id': 'gibdd_unical_id'}, inplace=True)
-
-    merged_df.to_sql(table_name, engine, if_exists='append', index=False)
+    merged_df['gibdd_unical_id'] = merged_df['gibdd_unical_id'].apply(lambda x: int(x) if not pd.isna(x) else None)
+    merged_df['source'] = merged_df.apply(define_source, axis=1)
+    #
+    # merged_df.to_sql(table_name, engine, if_exists='append', index=False)
 
     return merged_df
 
@@ -208,14 +222,68 @@ def force_update_signs() -> tuple[bool, bool]:
 
     format_united_signs = format_signs(CommerceSign.objects.using('commerce_db').all(),
                                        GibddSign.objects.using('gibdd_db').all())
-    print(format_united_signs.head())
+    format_united_signs['gibdd_unical_id'] = format_united_signs['gibdd_unical_id'].astype(str)
+    format_united_signs['gibdd_unical_id'] = format_united_signs['gibdd_unical_id'].replace('nan', None)
 
-    # Получаем все знаки из базы данных
-    united_signs_qs = UnitedSign.objects.all()
-    old_united_signs = pd.DataFrame.from_records(
-        united_signs_qs.values('gibdd_unical_id', 'commerce_internal_id', 'name', 'latitude', 'longitude',
-                               'gibdd_description', 'commerce_description', 'source', 'status'))
 
-    print(old_united_signs.head())
+    united_signs_qs = UnitedSign.objects.exclude(status='removed')
+    existing_signs = set(zip(format_united_signs['gibdd_unical_id'], format_united_signs['commerce_internal_id']))
+
+    for sign in united_signs_qs:
+        if (sign.gibdd_unical_id, sign.commerce_internal_id) not in existing_signs:
+            sign.status = 'removed'
+            sign.save()
+
+    for index, row in format_united_signs.iterrows():
+        sign = UnitedSign.objects.filter(
+            gibdd_unical_id=row['gibdd_unical_id'],
+            commerce_internal_id=row['commerce_internal_id'],
+        ).exclude(status='removed').first()
+
+        if not sign:
+            if row['gibdd_unical_id']:
+                sign = UnitedSign.objects.filter(gibdd_unical_id=row['gibdd_unical_id']).exclude(status='removed').first()
+                if row['commerce_internal_id']:
+                    to_remove_sign = UnitedSign.objects.filter(commerce_internal_id=row['commerce_internal_id']).exclude(status='removed').first()
+                    if to_remove_sign:
+                        to_remove_sign.status = 'removed'
+                        to_remove_sign.save()
+            if not sign and row['commerce_internal_id']:
+                sign = UnitedSign.objects.filter(commerce_internal_id=row['commerce_internal_id']).exclude(status='removed').first()
+        if not sign:
+            sign = UnitedSign.objects.create(
+                gibdd_unical_id=row['gibdd_unical_id'],
+                commerce_internal_id=row['commerce_internal_id'],
+                name=row['name'],
+                latitude=row['latitude'],
+                longitude=row['longitude'],
+                gibdd_description=row['gibdd_description'],
+                commerce_description=row['commerce_description'],
+                source=row['source'],
+                status='new'
+            )
+            created = True
+        else:
+            updated_flag = not all((sign.gibdd_unical_id == row['gibdd_unical_id'],
+                                    sign.commerce_internal_id == row['commerce_internal_id'],
+                                    sign.name == row['name'],
+                                    sign.latitude == row['latitude'], sign.longitude == row['longitude'],
+                                    sign.gibdd_description == row['gibdd_description'],
+                                    sign.commerce_description == row['commerce_description'],
+                                    sign.source == row['source']))
+            sign.gibdd_unical_id = row['gibdd_unical_id']
+            sign.commerce_internal_id = row['commerce_internal_id']
+            sign.name = row['name']
+            sign.latitude = row['latitude']
+            sign.longitude = row['longitude']
+            sign.gibdd_description = row['gibdd_description']
+            sign.commerce_description = row['commerce_description']
+            sign.source = row['source']
+            if updated_flag:
+                updated = True
+                sign.status = 'updated'
+            else:
+                sign.status = None
+        sign.save()
 
     return created, updated

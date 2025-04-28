@@ -16,7 +16,7 @@ class UnitedSign(models.Model):
         ('both', 'ГИБДД и Коммерция'),
     ]
 
-    gibdd_unical_id = models.BigIntegerField(unique=False, null=True, blank=True)
+    gibdd_unical_id = models.CharField(unique=False, null=True, blank=True)
     commerce_internal_id = models.CharField(unique=False, max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255)
     latitude = models.DecimalField(max_digits=8, decimal_places=6)
@@ -39,12 +39,6 @@ class UnitedSign(models.Model):
     def __str__(self):
         return f"{self.name} ({self.gibdd_unical_id}, {self.commerce_internal_id})"
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['gibdd_unical_id']),
-            models.Index(fields=['commerce_internal_id']),
-        ]
-        unique_together = ['gibdd_unical_id', 'commerce_internal_id']
 
 
 class GibddSign(models.Model):

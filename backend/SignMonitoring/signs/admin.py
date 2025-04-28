@@ -12,5 +12,7 @@ class UnitedSignAdmin(admin.ModelAdmin):
         'longitude',
         'gibdd_description',
         'commerce_description',
+        'source',
+        'status',
     )
     list_per_page = 20

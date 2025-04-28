@@ -7,6 +7,7 @@ class UnitedSign(models.Model):
         ('new', 'Новый'),
         ('updated', 'Обновлен'),
         ('removed', 'Удален'),
+        ('conflict', 'Конфликт'),
         (None, 'Нет статуса'),
     ]
 

@@ -28,8 +28,8 @@ export default function Home() {
       applyFilters(data, sourceFilter, statusFilter, searchQuery)
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to load signs data",
+        title: "Ошибка",
+        description: "Не удалось загрузить данные о знаках",
         variant: "destructive",
       })
     } finally {
@@ -42,14 +42,14 @@ export default function Home() {
     try {
       const result = await forceLoadSigns()
       toast({
-        title: "Success",
+        title: "Успешно",
         description: result.detail,
       })
       await loadSigns()
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to refresh signs data",
+        title: "Ошибка",
+        description: "Не удалось обновить данные о знаках",
         variant: "destructive",
       })
     } finally {
@@ -106,7 +106,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-6">Road Signs Management Dashboard</h1>
+        <h1 className="text-2xl font-bold mb-6">Панель управления дорожными знаками</h1>
 
         <div className="flex flex-col lg:flex-row gap-4 mb-6">
           <div className="flex-1">

@@ -59,13 +59,13 @@ export function SignsTable({ signs, isLoading }: SignsTableProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "new":
-        return <Badge className="bg-green-500">New</Badge>
+        return <Badge className="bg-green-500">Новый</Badge>
       case "updated":
-        return <Badge className="bg-blue-500">Updated</Badge>
+        return <Badge className="bg-blue-500">Обновлен</Badge>
       case "conflict":
-        return <Badge className="bg-purple-500">Conflict</Badge>
+        return <Badge className="bg-purple-500">Конфликт</Badge>
       case "removed":
-        return <Badge className="bg-red-500">Removed</Badge>
+        return <Badge className="bg-red-500">Удален</Badge>
       default:
         return <Badge>{status}</Badge>
     }
@@ -74,9 +74,9 @@ export function SignsTable({ signs, isLoading }: SignsTableProps) {
   const getSourceBadge = (source: string) => {
     switch (source) {
       case "gibdd":
-        return <Badge className="bg-green-600">GIBDD</Badge>
+        return <Badge className="bg-green-600">ГИБДД</Badge>
       case "commerce":
-        return <Badge className="bg-amber-600">Commerce</Badge>
+        return <Badge className="bg-amber-600">Коммерция</Badge>
       default:
         return <Badge>{source}</Badge>
     }
@@ -85,7 +85,7 @@ export function SignsTable({ signs, isLoading }: SignsTableProps) {
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">
-        <CardTitle>Signs Table</CardTitle>
+        <CardTitle>Таблица знаков</CardTitle>
       </CardHeader>
       <CardContent className="p-0 overflow-auto h-[450px]">
         <Table>
@@ -163,14 +163,14 @@ export function SignsTable({ signs, isLoading }: SignsTableProps) {
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8">
                   <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
-                  <p>Loading signs data...</p>
+                  <p>Загрузка данных о знаках...</p>
                 </TableCell>
               </TableRow>
             ) : sortedSigns.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8">
                   <AlertTriangle className="h-6 w-6 mx-auto mb-2 text-amber-500" />
-                  <p>No signs found</p>
+                  <p>Знаки не найдены</p>
                 </TableCell>
               </TableRow>
             ) : (
@@ -200,41 +200,40 @@ export function SignsTable({ signs, isLoading }: SignsTableProps) {
                       <TableCell colSpan={5} className="p-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <h4 className="font-semibold mb-2">Basic Information</h4>
+                            <h4 className="font-semibold mb-2">Основная информация</h4>
                             <div className="space-y-1 text-sm">
                               <p>
-                                <span className="font-medium">Name:</span> {sign.name}
+                                <span className="font-medium">Название:</span> {sign.name}
                               </p>
                               <p>
                                 <span className="font-medium">ID:</span> {sign.id}
                               </p>
                               <p>
-                                <span className="font-medium">Source:</span> {sign.source}
+                                <span className="font-medium">Источник:</span> {sign.source}
                               </p>
                               <p>
-                                <span className="font-medium">Status:</span> {sign.status}
+                                <span className="font-medium">Статус:</span> {sign.status}
                               </p>
                             </div>
                           </div>
                           <div>
-                            <h4 className="font-semibold mb-2">Additional Details</h4>
+                            <h4 className="font-semibold mb-2">Дополнительная информация</h4>
                             <div className="space-y-1 text-sm">
                               <p>
-                                <span className="font-medium">GIBDD ID:</span> {sign.gibdd_unical_id || "N/A"}
+                                <span className="font-medium">ID ГИБДД:</span> {sign.gibdd_unical_id || "Н/Д"}
                               </p>
                               <p>
-                                <span className="font-medium">Commerce ID:</span> {sign.commerce_internal_id || "N/A"}
+                                <span className="font-medium">ID Коммерции:</span> {sign.commerce_internal_id || "Н/Д"}
                               </p>
                               <p>
-                                <span className="font-medium">Coordinates:</span> {sign.latitude}, {sign.longitude}
+                                <span className="font-medium">Координаты:</span> {sign.latitude}, {sign.longitude}
                               </p>
                               <p>
-                                <span className="font-medium">GIBDD Description:</span>{" "}
-                                {sign.gibdd_description || "N/A"}
+                                <span className="font-medium">Описание ГИБДД:</span> {sign.gibdd_description || "Н/Д"}
                               </p>
                               <p>
-                                <span className="font-medium">Commerce Description:</span>{" "}
-                                {sign.commerce_description || "N/A"}
+                                <span className="font-medium">Описание Коммерции:</span>{" "}
+                                {sign.commerce_description || "Н/Д"}
                               </p>
                             </div>
                           </div>

@@ -6,8 +6,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
 export const metadata = {
-  title: "Road Signs Management Dashboard",
-  description: "Dashboard for managing and viewing road signs data",
+  title: "Панель управления дорожными знаками",
+  description: "Панель для управления и просмотра данных о дорожных знаках",
     generator: 'v0.dev'
 }
 

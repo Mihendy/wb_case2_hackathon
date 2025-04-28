@@ -30,7 +30,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
       <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
       <Input
         type="text"
-        placeholder="Search by name or ID..."
+        placeholder="Поиск по названию или ID..."
         className="pl-8 pr-10"
         value={query}
         onChange={handleChange}

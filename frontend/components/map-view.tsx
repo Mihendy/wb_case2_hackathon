@@ -67,9 +67,9 @@ export function MapView({ signs }: MapViewProps) {
     return (
       <Card className="h-full">
         <CardHeader>
-          <CardTitle>Map View</CardTitle>
+          <CardTitle>Карта</CardTitle>
         </CardHeader>
-        <CardContent className="flex items-center justify-center h-[400px]">Loading map...</CardContent>
+        <CardContent className="flex items-center justify-center h-[400px]">Загрузка карты...</CardContent>
       </Card>
     )
   }
@@ -77,7 +77,7 @@ export function MapView({ signs }: MapViewProps) {
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">
-        <CardTitle>Map View</CardTitle>
+        <CardTitle>Карта</CardTitle>
       </CardHeader>
       <CardContent className="p-0 h-[450px]">
         <div className="h-full w-full">
@@ -102,16 +102,18 @@ export function MapView({ signs }: MapViewProps) {
                     <div className="p-2">
                       <h3 className="font-bold">{sign.name}</h3>
                       <p className="text-sm">ID: {sign.id}</p>
-                      {sign.gibdd_unical_id && <p className="text-sm">GIBDD ID: {sign.gibdd_unical_id}</p>}
-                      {sign.commerce_internal_id && <p className="text-sm">Commerce ID: {sign.commerce_internal_id}</p>}
+                      {sign.gibdd_unical_id && <p className="text-sm">ID ГИБДД: {sign.gibdd_unical_id}</p>}
+                      {sign.commerce_internal_id && (
+                        <p className="text-sm">ID Коммерции: {sign.commerce_internal_id}</p>
+                      )}
                       <p className="text-sm capitalize">
-                        Source:{" "}
+                        Источник:{" "}
                         <span className={sign.source === "gibdd" ? "text-green-600" : "text-amber-600"}>
                           {sign.source}
                         </span>
                       </p>
                       <p className="text-sm capitalize">
-                        Status:{" "}
+                        Статус:{" "}
                         <span
                           className={
                             sign.status === "removed"
@@ -125,7 +127,7 @@ export function MapView({ signs }: MapViewProps) {
                         </span>
                       </p>
                       <p className="text-sm">
-                        Coordinates: {lat.toFixed(6)}, {lng.toFixed(6)}
+                        Координаты: {lat.toFixed(6)}, {lng.toFixed(6)}
                       </p>
                     </div>
                   </Popup>

@@ -25,29 +25,29 @@ export function FilterPanel({ onSourceChange, onStatusChange, sourceFilter, stat
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="h-10">
           <Filter className="h-4 w-4 mr-2" />
-          Filters
+          Фильтры
           {(sourceFilter !== "all" || statusFilter !== "all") && (
             <span className="ml-1 rounded-full bg-primary w-2 h-2"></span>
           )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>Filter by Source</DropdownMenuLabel>
+        <DropdownMenuLabel>Фильтр по источнику</DropdownMenuLabel>
         <DropdownMenuRadioGroup value={sourceFilter} onValueChange={onSourceChange}>
-          <DropdownMenuRadioItem value="all">All Sources</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="gibdd">GIBDD</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="commerce">Commerce</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="all">Все источники</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="gibdd">ГИБДД</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="commerce">Коммерция</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+        <DropdownMenuLabel>Фильтр по статусу</DropdownMenuLabel>
         <DropdownMenuRadioGroup value={statusFilter} onValueChange={onStatusChange}>
-          <DropdownMenuRadioItem value="all">All Statuses</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="new">New</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="updated">Updated</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="conflict">Conflict</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="removed">Removed</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="all">Все статусы</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="new">Новый</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="updated">Обновлен</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="conflict">Конфликт</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="removed">Удален</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

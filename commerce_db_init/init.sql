@@ -45,7 +45,9 @@ FROM (VALUES
             ('B, Location', '-12.074123,-77.046058', NULL, 'IIDBB001008'),
             ('B, Location', '41.891432,12.543789', NULL, 'IIDBB001009'),
             ('B, Location', '41.891450,12.547389', NULL, 'IIDBB001010'),
-            ('A, Location', '25.283145,55.270459', NULL, 'IIDBB001011')
+            ('A, Location', '25.283145,55.270459', NULL, 'IIDBB001011'),
+            ('P, Location ', '56.812963785980465,60.64002740660162', 'Парк', 'IIDBB003012')
+
 ) AS NewData(name, geo, description, internal_id)
 WHERE NOT EXISTS (SELECT 1 FROM sample_table WHERE sample_table.internal_id = NewData.internal_id);
 GO

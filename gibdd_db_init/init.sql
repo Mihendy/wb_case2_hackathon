@@ -41,5 +41,6 @@ VALUES (1001, 'Location A', 37458923, -122134789, 'A beautiful park in the city 
        (1008, 'Location B', -12074123, -77046098, 'Modern skyscraper with observation deck.'),
        (1009, 'Location B', 41891432, 12543789, 'Ancient ruins surrounded by nature.'),
        (1010, 'Location A', 25283945, 55270659, 'Beach resort perfect for relaxation.'),
-       (1011, 'Location A', 25283947, 55270660, 'Beach resort perfect for relaxation.')
+       (1011, 'Location A', 25283947, 55270660, 'Beach resort perfect for relaxation.'),
+       (1111, 'Location A', 57137924, 65590910, 'СЕТЬ ЦЕХОВ ПО ПРОИЗВОДСТВУ И РЕМОНТУ ОБУВИ')
 ON CONFLICT (unical_id) DO NOTHING; -- Записываются только уникальные записи по unical_id
